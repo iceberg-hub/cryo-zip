@@ -4,6 +4,8 @@ TARGET = cryo-zip
 
 SRC = \
 	src/frequency.c \
+	src/heap.c \
+	src/huffman.c \
 	src/main.c
 
 OBJ = $(SRC:.c=.o)
@@ -11,6 +13,10 @@ OBJ = $(SRC:.c=.o)
 TEST_SRC = \
 	tests/test_main.c \
 	tests/test_frequency.c \
+	tests/test_heap.c \
+	tests/test_huffman.c \
+	src/heap.c \
+	src/huffman.c \
 	src/frequency.c
 
 all: $(TARGET)
