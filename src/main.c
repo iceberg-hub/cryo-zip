@@ -1,8 +1,27 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "frequency.h"
 
-#define ASCII_SIZE 256
+#include "constants.h"
+#include "frequency.h"
+#include "huffman.h"
+
+void print_frequencies(int frequencies[ASCII_SIZE])
+{
+    for (int i = 0; i < ASCII_SIZE; i++)
+    {
+        if (frequencies[i] > 0)
+        {
+            if (i >= 32 && i <= 126)
+            {
+                printf("'%c' -> %d\n", i, frequencies[i]);
+            }
+            else
+            {
+                printf("0x%02x -> %d\n", i, frequencies[i]);
+            }
+        }
+    }
+}
 
 int main(int argc, char *argv[])
 {
@@ -26,20 +45,21 @@ int main(int argc, char *argv[])
 
     fclose(file);
 
-    for (int i = 0; i < ASCII_SIZE; i++)
+    print_frequencies(frequencies);
+
+    HuffmanNode *root = build_huffman_tree(frequencies);
+
+    if (root == NULL)
     {
-        if (frequencies[i] > 0)
-        {
-            if (i >= 32 && i <= 126)
-            {
-                printf("'%c' -> %d\n", i, frequencies[i]);
-            }
-            else
-            {
-                printf("0x%02x -> %d\n", i, frequencies[i]);
-            }
-        }
+        fprintf(stderr, "Failed to build Huffman tree\n");
+        return 1;
     }
+
+    printf("Root frequency: %d\n", root->frequency);
+
+    print_tree(root, 0);
+
+    free_huffman_tree(root);
 
     return 0;
 }
