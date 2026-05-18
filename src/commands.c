@@ -72,6 +72,8 @@ int read_command(const char *input_path)
 
     int frequencies[ASCII_SIZE] = {0};
 
+    printf("Reading header...");
+
     int valid = read_header(input, frequencies);
 
     if (!valid)
@@ -81,11 +83,7 @@ int read_command(const char *input_path)
         return 1;
     }
 
-    printf("=== Check the frequencies ===\n");
-
-    print_frequencies(frequencies);
-
-    printf("\n=== Building ===\n");
+    printf("Building tree for decoding...");
 
     HuffmanNode *root = build_huffman_tree(frequencies);
 
@@ -96,15 +94,13 @@ int read_command(const char *input_path)
         return 1;
     }
 
-    print_tree(root, 0);
-
     free_huffman_tree(root);
 
     fclose(input);
     return 0;
 }
 
-void decode_command(const char *input_path, const char *output_path)
+int decode_command(const char *input_path, const char *output_path)
 {
     return 0;
 }
