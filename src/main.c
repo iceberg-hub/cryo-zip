@@ -1,53 +1,41 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "constants.h"
-#include "frequency.h"
-#include "header.h"
-#include "huffman.h"
-#include "debug.h"
+#include "commands.h"
 
 int main(int argc, char *argv[])
 {
-    if (argc < 2)
+    if (argc < 4)
     {
-        fprintf(stderr, "Usage: %s <filename>\n", argv[0]);
+        fprintf(stderr,
+                "Usage:\n"
+                "  %s 1 <input> <output>   Encode\n"
+                "  %s 2 <input> dummy      Read header\n"
+                "  %s 3 <input> <output>   Decode\n",
+                argv[0],
+                argv[0],
+                argv[0]);
+
         return 1;
     }
 
-    FILE *file = fopen(argv[1], "rb");
+    int mode = atoi(argv[1]);
 
-    if (!file)
+    switch (mode)
     {
-        perror("Failed to open file");
+    case 1:
+        return encode_command(argv[2], argv[3]);
+        break;
+    case 2:
+        read_command(argv[2]);
+        break;
+    case 3:
+        decode_command(argv[2], argv[3]);
+        break;
+    default:
+        fprintf(stderr, "Invalid mode.\n");
         return 1;
     }
-
-    int frequencies[ASCII_SIZE] = {0};
-
-    count_frequencies(file, frequencies);
-
-    write_header(file, frequencies);
-
-    printf("HEADER %d", read_header(file, frequencies));
-
-    fclose(file);
-
-    print_frequencies(frequencies);
-
-    HuffmanNode *root = build_huffman_tree(frequencies);
-
-    if (root == NULL)
-    {
-        fprintf(stderr, "Failed to build Huffman tree\n");
-        return 1;
-    }
-
-    printf("Root frequency: %d\n", root->frequency);
-
-    print_tree(root, 0);
-
-    free_huffman_tree(root);
 
     return 0;
 }
