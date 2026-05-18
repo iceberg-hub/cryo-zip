@@ -60,12 +60,51 @@ int encode_command(const char *input_path, const char *output_path)
     return 0;
 }
 
-void read_command(const char *input_path)
+int read_command(const char *input_path)
 {
-    printf("Read not implemented yet.\n");
+    FILE *input = fopen(input_path, "rb");
+
+    if (!input)
+    {
+        perror("Failed to open input file");
+        return 1;
+    }
+
+    int frequencies[ASCII_SIZE] = {0};
+
+    int valid = read_header(input, frequencies);
+
+    if (!valid)
+    {
+        fprintf(stderr, "Invalid compressed file\n");
+        fclose(input);
+        return 1;
+    }
+
+    printf("=== Check the frequencies ===\n");
+
+    print_frequencies(frequencies);
+
+    printf("\n=== Building ===\n");
+
+    HuffmanNode *root = build_huffman_tree(frequencies);
+
+    if (root == NULL)
+    {
+        fprintf(stderr, "Failed to rebuild Huffman tree\n");
+        fclose(input);
+        return 1;
+    }
+
+    print_tree(root, 0);
+
+    free_huffman_tree(root);
+
+    fclose(input);
+    return 0;
 }
 
 void decode_command(const char *input_path, const char *output_path)
 {
-    printf("Decode not implemented yet.\n");
+    return 0;
 }

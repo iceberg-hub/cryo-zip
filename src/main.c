@@ -27,10 +27,10 @@ int main(int argc, char *argv[])
         return encode_command(argv[2], argv[3]);
         break;
     case 2:
-        read_command(argv[2]);
+        return read_command(argv[2]);
         break;
     case 3:
-        decode_command(argv[2], argv[3]);
+        return decode_command(argv[2], argv[3]);
         break;
     default:
         fprintf(stderr, "Invalid mode.\n");
