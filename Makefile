@@ -2,22 +2,13 @@ CC = gcc
 CFLAGS = -Wall -Wextra -O2 -std=c11
 TARGET = cryo-zip
 
-SRC = \
-	src/frequency.c \
-	src/heap.c \
-	src/huffman.c \
-	src/main.c
+SRC = $(wildcard src/*.c)
 
 OBJ = $(SRC:.c=.o)
 
 TEST_SRC = \
-	tests/test_main.c \
-	tests/test_frequency.c \
-	tests/test_heap.c \
-	tests/test_huffman.c \
-	src/heap.c \
-	src/huffman.c \
-	src/frequency.c
+	$(wildcard tests/*.c) \
+	$(filter-out src/main.c, $(SRC))
 
 all: $(TARGET)
 
