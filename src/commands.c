@@ -6,6 +6,7 @@
 #include "frequency.h"
 #include "header.h"
 #include "debug.h"
+#include "decoder.h"
 
 int encode_command(const char *input_path, const char *output_path)
 {
@@ -45,11 +46,22 @@ int encode_command(const char *input_path, const char *output_path)
 
     print_tree(root, 0);
 
-    CodeTable table = {0, 0};
+    CodeTable table = {0};
 
     build_code_table(root, &table);
 
-    write_header(output, frequencies);
+    Header header = {0};
+
+    for (int i = 0; i < ASCII_SIZE; i++)
+    {
+        header.frequencies[i] =
+            frequencies[i];
+
+        header.original_size +=
+            frequencies[i];
+    }
+
+    write_header(output, &header);
 
     encode_file(input, output, &table);
 
@@ -70,11 +82,11 @@ int read_command(const char *input_path)
         return 1;
     }
 
-    int frequencies[ASCII_SIZE] = {0};
+    printf("Reading header...\n");
 
-    printf("Reading header...");
+    Header header = {0};
 
-    int valid = read_header(input, frequencies);
+    int valid = read_header(input, &header);
 
     if (!valid)
     {
@@ -83,9 +95,9 @@ int read_command(const char *input_path)
         return 1;
     }
 
-    printf("Building tree for decoding...");
+    printf("Building tree for decoding...\n");
 
-    HuffmanNode *root = build_huffman_tree(frequencies);
+    HuffmanNode *root = build_huffman_tree(header.frequencies);
 
     if (root == NULL)
     {
@@ -94,13 +106,63 @@ int read_command(const char *input_path)
         return 1;
     }
 
+    printf("Tree rebuilt successfully.\n");
+
+    print_tree(root, 0);
+
     free_huffman_tree(root);
 
     fclose(input);
+
     return 0;
 }
 
 int decode_command(const char *input_path, const char *output_path)
 {
+    FILE *input = fopen(input_path, "rb");
+
+    if (!input)
+    {
+        perror("Failed to open input");
+        return 1;
+    }
+
+    FILE *output = fopen(output_path, "wb");
+
+    if (!output)
+    {
+        perror("Failed to open output");
+        fclose(input);
+        return 1;
+    }
+
+    Header header = {0};
+
+    if (!read_header(input, &header))
+    {
+        fprintf(stderr, "Invalid compressed file\n");
+        fclose(input);
+        fclose(output);
+        return 1;
+    }
+
+    HuffmanNode *root = build_huffman_tree(header.frequencies);
+
+    if (!root)
+    {
+        fprintf(stderr, "Failed to rebuild tree\n");
+        fclose(input);
+        fclose(output);
+        return 1;
+    }
+
+    decode_file(input, output, root, header.original_size);
+
+    free_huffman_tree(root);
+
+    fclose(input);
+    fclose(output);
+
+    printf("File decoded successfully.\n");
     return 0;
 }

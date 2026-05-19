@@ -19,7 +19,7 @@ src/%.o: src/%.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 run: $(TARGET)
-	./$(TARGET) 1 example-data/test.txt example-data/test.zip
+	./$(TARGET) 1 example-data/test.txt example-data/test.huff
 
 clean:
 	rm -f $(OBJ) $(TARGET)
