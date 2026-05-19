@@ -2,17 +2,18 @@
 #include <string.h>
 
 #include "constants.h"
+#include "header.h"
 
-void write_header(FILE *output, int frequencies[ASCII_SIZE])
+void write_header(FILE *output, Header *header)
 {
-    fwrite(MAGIC, sizeof(char),
-           MAGIC_SIZE, output);
+    fwrite(MAGIC, sizeof(char), MAGIC_SIZE, output);
 
-    fwrite(frequencies,
-           sizeof(int), ASCII_SIZE, output);
+    fwrite(&header->original_size, sizeof(int), 1, output);
+
+    fwrite(header->frequencies, sizeof(int), ASCII_SIZE, output);
 }
 
-int read_header(FILE *input, int frequencies[ASCII_SIZE])
+int read_header(FILE *input, Header *header)
 {
     char magic[MAGIC_SIZE];
 
@@ -23,7 +24,9 @@ int read_header(FILE *input, int frequencies[ASCII_SIZE])
         return 0;
     }
 
-    fread(frequencies, sizeof(int), ASCII_SIZE, input);
+    fread(&header->original_size, sizeof(int), 1, input);
+
+    fread(header->frequencies, sizeof(int), ASCII_SIZE, input);
 
     return 1;
 }

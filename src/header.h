@@ -4,8 +4,18 @@
 #include <stdio.h>
 #include "constants.h"
 
-void write_header(FILE *output, int frequencies[ASCII_SIZE]);
+typedef struct
+{
+    int original_size;
+    int frequencies[ASCII_SIZE];
+} Header;
 
-int read_header(FILE *input, int frequencies[ASCII_SIZE]);
+void write_header(
+    FILE *output,
+    Header *header);
+
+int read_header(
+    FILE *input,
+    Header *header);
 
 #endif
